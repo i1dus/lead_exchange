@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package leadexchange.v1;
+
+option go_package = "leadexchange/gen/go/leadexchange/v1;leadexchangev1";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "validate/validate.proto";
+
+service UserService {
+  // Получить профиль текущего пользователя.
+  rpc GetProfile (google.protobuf.Empty) returns (UserProfile) {
+    option (google.api.http) = {
+      get: "/v1/user/profile"
+    };
+  }
+
+  // Обновить профиль пользователя.
+  rpc UpdateProfile (UpdateProfileRequest) returns (UserProfile) {
+    option (google.api.http) = {
+      patch: "/v1/user/profile"
+      body: "*"
+    };
+  }
+}
+
+enum UserRole {
+  USER_ROLE_UNSPECIFIED = 0;
+  USER_ROLE_USER = 1;
+  USER_ROLE_ADMIN = 2;
+}
+
+message UserProfile {
+  string id = 1;
+  string email = 2;
+  string first_name = 3;
+  string last_name = 4;
+  optional string phone = 5;
+  optional string agency_name = 6;
+  optional string avatar_url = 7;
+  UserRole role = 8;
+}
+
+message UpdateProfileRequest {
+  optional string first_name = 1 [(validate.rules).string = {min_len: 1, max_len: 64}];
+  optional string last_name = 2 [(validate.rules).string = {min_len: 1, max_len: 64}];
+  optional string phone = 3 [(validate.rules).string = {pattern: "^\\+?[0-9]{10,15}$"}];
+  optional string agency_name = 4;
+  optional string avatar_url = 5;
+}
