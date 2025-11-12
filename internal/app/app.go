@@ -2,6 +2,8 @@ package app
 
 import (
 	minio "lead_exchange/internal/lib/minio/core"
+	"lead_exchange/internal/repository/lead_repository"
+	"lead_exchange/internal/services/lead"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
@@ -22,10 +24,12 @@ func New(
 	tokenTTL time.Duration, secret string, minioClient minio.Client) *App {
 
 	userRepository := user_repository.NewUserRepository(pool, log)
+	leadRepository := lead_repository.NewLeadRepository(pool, log)
 
 	userService := user.New(log, userRepository, tokenTTL, secret)
+	leadService := lead.New(log, leadRepository)
 
-	grpcApp := grpcapp.New(log, userService, userService, minioClient, grpcPort, secret)
+	grpcApp := grpcapp.New(log, userService, userService, minioClient, leadService, grpcPort, secret)
 
 	return &App{
 		GRPCServer: grpcApp,

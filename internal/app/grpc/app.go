@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"lead_exchange/internal/grpc/authgrpc"
 	"lead_exchange/internal/grpc/filegrpc"
+	"lead_exchange/internal/grpc/leadgrpc"
 	"lead_exchange/internal/grpc/usergrpc"
 	minio "lead_exchange/internal/lib/minio/core"
 	"lead_exchange/internal/middleware"
@@ -42,6 +43,7 @@ func New(
 	authSvc authgrpc.AuthService,
 	userSvc usergrpc.UserService,
 	minioClient minio.Client,
+	leadSvc leadgrpc.LeadService,
 	port int,
 	secret string,
 ) *App {
@@ -65,6 +67,7 @@ func New(
 	authgrpc.RegisterAuthServerGRPC(gRPCServer, authSvc)
 	usergrpc.RegisterUserServerGRPC(gRPCServer, userSvc)
 	filegrpc.RegisterFileServerGRPC(gRPCServer, minioClient)
+	leadgrpc.RegisterLeadServerGRPC(gRPCServer, leadSvc)
 
 	return &App{
 		log:        log,
@@ -107,6 +110,7 @@ func (a *App) Run() error {
 		pb.RegisterAuthServiceHandlerFromEndpoint,
 		pb.RegisterUserServiceHandlerFromEndpoint,
 		pb.RegisterFileServiceHandlerFromEndpoint,
+		pb.RegisterLeadServiceHandlerFromEndpoint,
 	} {
 		if err := register(ctx, gwMux, fmt.Sprintf("localhost:%d", a.port), opts); err != nil {
 			return fmt.Errorf("%s: %w", op, err)
@@ -124,6 +128,7 @@ func (a *App) Run() error {
 		"/swagger/auth/doc.json": "pkg/auth.swagger.json",
 		"/swagger/user/doc.json": "pkg/user.swagger.json",
 		"/swagger/file/doc.json": "pkg/file.swagger.json",
+		"/swagger/lead/doc.json": "pkg/lead.swagger.json",
 	}
 
 	// Отдаём swagger.json для каждого сервиса
@@ -145,6 +150,7 @@ func (a *App) Run() error {
 		httpSwagger.URL("/swagger/auth/doc.json"), // по умолчанию откроется Auth
 		httpSwagger.URL("/swagger/user/doc.json"),
 		httpSwagger.URL("/swagger/file/doc.json"),
+		httpSwagger.URL("/swagger/lead/doc.json"),
 	))
 
 	httpMux.Handle("/swagger/", swaggerMux)

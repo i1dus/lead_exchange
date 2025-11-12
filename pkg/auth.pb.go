@@ -282,12 +282,11 @@ const file_auth_proto_rawDesc = "" +
 	"\fAuthResponse\x12\x14\n" +
 	"\x05token\x18\x01 \x01(\tR\x05token\"-\n" +
 	"\x13HealthCheckResponse\x12\x16\n" +
-	"\x06status\x18\x01 \x01(\tR\x06status2\xb4\x02\n" +
+	"\x06status\x18\x01 \x01(\tR\x06status2\xb1\x02\n" +
 	"\vAuthService\x12b\n" +
 	"\bRegister\x12 .leadexchange.v1.RegisterRequest\x1a\x16.google.protobuf.Empty\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/v1/auth/register\x12`\n" +
-	"\x05Login\x12\x1d.leadexchange.v1.LoginRequest\x1a\x1d.leadexchange.v1.AuthResponse\"\x19\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/v1/auth/login\x12_\n" +
-	"\vHealthCheck\x12\x16.google.protobuf.Empty\x1a$.leadexchange.v1.HealthCheckResponse\"\x12\x82\xd3\xe4\x93\x02\f\x12\n" +
-	"/v1/healthB4Z2leadexchange/gen/go/leadexchange/v1;leadexchangev1b\x06proto3"
+	"\x05Login\x12\x1d.leadexchange.v1.LoginRequest\x1a\x1d.leadexchange.v1.AuthResponse\"\x19\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/v1/auth/login\x12\\\n" +
+	"\vHealthCheck\x12\x16.google.protobuf.Empty\x1a$.leadexchange.v1.HealthCheckResponse\"\x0f\x82\xd3\xe4\x93\x02\t\x12\a/healthB4Z2leadexchange/gen/go/leadexchange/v1;leadexchangev1b\x06proto3"
 
 var (
 	file_auth_proto_rawDescOnce sync.Once

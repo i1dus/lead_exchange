@@ -16,6 +16,7 @@ require (
 	github.com/jackc/pgx/v5 v5.7.6
 	github.com/minio/minio-go/v7 v7.0.95
 	github.com/rs/cors v1.11.1
+	github.com/samber/lo v1.52.0
 	github.com/swaggo/http-swagger v1.3.4
 	golang.org/x/crypto v0.42.0
 	golang.org/x/exp v0.0.0-20250911091902-df9299821621

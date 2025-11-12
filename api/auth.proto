@@ -28,7 +28,7 @@ service AuthService {
   // Проверка доступности сервиса.
   rpc HealthCheck (google.protobuf.Empty) returns (HealthCheckResponse) {
     option (google.api.http) = {
-      get: "/v1/health"
+      get: "/health"
     };
   }
 }
