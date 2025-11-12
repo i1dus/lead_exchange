@@ -9,7 +9,7 @@ VALUES
         'b5d7a10e-418d-42a3-bb32-87e90d4a7a24', -- Дом у моря (PUBLISHED)
         'aea6842b-c540-4aa8-aa1f-90b1b46aba12', -- user2@m.c (seller)
         NULL, -- пока нет покупателя
-        2500000.00,
+        2500000,
         'PENDING'
     ),
     (
@@ -17,7 +17,7 @@ VALUES
         'e1b88dcf-1225-4d0d-827f-4ea8fdf99664', -- Участок под застройку (PUBLISHED)
         'f4e8f58b-94f4-4e0f-bd85-1b06b8a3f242', -- admin@m.c (seller)
         NULL, -- пока нет покупателя
-        600000.00,
+        600000,
         'PENDING'
     ),
     -- ACCEPTED deals (приняты покупателем)
@@ -26,7 +26,7 @@ VALUES
         'a8b55f9d-32c2-4e1f-97c7-341f49b7c012', -- 3-комнатная квартира в центре (NEW)
         '8c6f9c70-9312-4f17-94b0-2a2b9230f5d1', -- user@m.c (seller)
         'aea6842b-c540-4aa8-aa1f-90b1b46aba12', -- user2@m.c (buyer)
-        800000.00,
+        800000,
         'ACCEPTED'
     ),
     -- COMPLETED deals (завершены, лид передан)
@@ -35,7 +35,7 @@ VALUES
         'c7d9e1ff-8a9e-4a4e-9b5c-b47c3fddf311', -- Квартира для инвестиций (PURCHASED)
         '8c6f9c70-9312-4f17-94b0-2a2b9230f5d1', -- user@m.c (seller)
         'aea6842b-c540-4aa8-aa1f-90b1b46aba12', -- user2@m.c (buyer)
-        420000.00,
+        420000,
         'COMPLETED'
     ),
     -- CANCELLED deals (отменены продавцом)
@@ -44,7 +44,7 @@ VALUES
         'b5d7a10e-418d-42a3-bb32-87e90d4a7a24', -- Дом у моря (PUBLISHED)
         'aea6842b-c540-4aa8-aa1f-90b1b46aba12', -- user2@m.c (seller)
         NULL,
-        3000000.00,
+        3000000,
         'CANCELLED'
     ),
     -- REJECTED deals (отклонены покупателем)
@@ -53,7 +53,7 @@ VALUES
         'e1b88dcf-1225-4d0d-827f-4ea8fdf99664', -- Участок под застройку (PUBLISHED)
         'f4e8f58b-94f4-4e0f-bd85-1b06b8a3f242', -- admin@m.c (seller)
         '8c6f9c70-9312-4f17-94b0-2a2b9230f5d1', -- user@m.c (buyer, но отклонил)
-        700000.00,
+        700000,
         'REJECTED'
     );
 
