@@ -20,7 +20,7 @@ func FromContext(ctx context.Context) (uuid.UUID, bool) {
 	return id, ok
 }
 
-func JWTUnaryInterceptor(secret string) grpc.UnaryServerInterceptor {
+func JWTUnaryInterceptor(secret string, disableAuth bool) grpc.UnaryServerInterceptor {
 	// Список методов, для которых токен не нужен
 	whitelist := map[string]struct{}{
 		"/leadexchange.v1.AuthService/Login":       {},
@@ -28,12 +28,21 @@ func JWTUnaryInterceptor(secret string) grpc.UnaryServerInterceptor {
 		"/leadexchange.v1.AuthService/HealthCheck": {},
 	}
 
+	// Тестовый user ID для использования когда auth отключен
+	testUserID := uuid.MustParse("8c6f9c70-9312-4f17-94b0-2a2b9230f5d1")
+
 	return func(
 		ctx context.Context,
 		req interface{},
 		info *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler,
 	) (interface{}, error) {
+		// Если auth отключен, используем тестовый user ID
+		if disableAuth {
+			ctx = context.WithValue(ctx, userIDKey, testUserID)
+			return handler(ctx, req)
+		}
+
 		if _, ok := whitelist[info.FullMethod]; ok {
 			return handler(ctx, req)
 		}
@@ -56,7 +65,7 @@ func JWTUnaryInterceptor(secret string) grpc.UnaryServerInterceptor {
 		tokenString := parts[1]
 
 		if tokenString == "test" {
-			ctx = context.WithValue(ctx, userIDKey, uuid.MustParse("8c6f9c70-9312-4f17-94b0-2a2b9230f5d1"))
+			ctx = context.WithValue(ctx, userIDKey, testUserID)
 			return handler(ctx, req)
 		}
 

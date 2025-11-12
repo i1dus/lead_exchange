@@ -3,8 +3,10 @@ package grpcapp
 import (
 	"context"
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"lead_exchange/internal/grpc/authgrpc"
+	"lead_exchange/internal/grpc/dealgrpc"
 	"lead_exchange/internal/grpc/filegrpc"
 	"lead_exchange/internal/grpc/leadgrpc"
 	"lead_exchange/internal/grpc/usergrpc"
@@ -37,15 +39,17 @@ type App struct {
 	port       int
 }
 
-// New создаёт gRPC + HTTP (Gateway) сервер с Auth, User и File сервисами.
+// New создаёт gRPC + HTTP (Gateway) сервер с Auth, User, File, Lead и Deal сервисами.
 func New(
 	log *slog.Logger,
 	authSvc authgrpc.AuthService,
 	userSvc usergrpc.UserService,
 	minioClient minio.Client,
 	leadSvc leadgrpc.LeadService,
+	dealSvc dealgrpc.DealService,
 	port int,
 	secret string,
+	disableAuth bool,
 ) *App {
 	loggingOpts := []logging.Option{
 		logging.WithLogOnEvents(logging.PayloadReceived, logging.PayloadSent),
@@ -57,17 +61,28 @@ func New(
 		}),
 	}
 
-	gRPCServer := grpc.NewServer(grpc.ChainUnaryInterceptor(
+	interceptors := []grpc.UnaryServerInterceptor{
 		recovery.UnaryServerInterceptor(recoveryOpts...),
 		logging.UnaryServerInterceptor(InterceptorLogger(log), loggingOpts...),
-		middleware.JWTUnaryInterceptor(secret),
-	))
+	}
 
-	// ✅ Регистрируем все три gRPC сервера
+	// Добавляем JWT interceptor только если auth не отключен
+	if !disableAuth {
+		interceptors = append(interceptors, middleware.JWTUnaryInterceptor(secret, false))
+	} else {
+		log.Warn("Authentication is DISABLED - all requests will use test user ID")
+		// Когда auth отключен, используем interceptor который всегда пропускает с тестовым user ID
+		interceptors = append(interceptors, middleware.JWTUnaryInterceptor(secret, true))
+	}
+
+	gRPCServer := grpc.NewServer(grpc.ChainUnaryInterceptor(interceptors...))
+
+	// ✅ Регистрируем все gRPC сервера
 	authgrpc.RegisterAuthServerGRPC(gRPCServer, authSvc)
 	usergrpc.RegisterUserServerGRPC(gRPCServer, userSvc)
 	filegrpc.RegisterFileServerGRPC(gRPCServer, minioClient)
 	leadgrpc.RegisterLeadServerGRPC(gRPCServer, leadSvc)
+	dealgrpc.RegisterDealServerGRPC(gRPCServer, dealSvc)
 
 	return &App{
 		log:        log,
@@ -80,6 +95,70 @@ func InterceptorLogger(l *slog.Logger) logging.Logger {
 	return logging.LoggerFunc(func(ctx context.Context, lvl logging.Level, msg string, fields ...any) {
 		l.Log(ctx, slog.Level(lvl), msg, fields...)
 	})
+}
+
+// mergeSwaggerFiles объединяет несколько swagger JSON файлов в один документ.
+func mergeSwaggerFiles(filePaths []string) ([]byte, error) {
+	type SwaggerDoc struct {
+		Swagger     string                 `json:"swagger"`
+		Info        map[string]interface{} `json:"info"`
+		Tags        []interface{}          `json:"tags"`
+		Consumes    []string               `json:"consumes"`
+		Produces    []string               `json:"produces"`
+		Paths       map[string]interface{} `json:"paths"`
+		Definitions map[string]interface{} `json:"definitions"`
+	}
+
+	merged := SwaggerDoc{
+		Swagger:     "2.0",
+		Info:        map[string]interface{}{"title": "Lead Exchange API", "version": "1.0"},
+		Tags:        []interface{}{},
+		Consumes:    []string{"application/json"},
+		Produces:    []string{"application/json"},
+		Paths:       make(map[string]interface{}),
+		Definitions: make(map[string]interface{}),
+	}
+
+	seenTags := make(map[string]bool)
+
+	for _, filePath := range filePaths {
+		data, err := os.ReadFile(filePath)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read %s: %w", filePath, err)
+		}
+
+		var doc SwaggerDoc
+		if err := json.Unmarshal(data, &doc); err != nil {
+			return nil, fmt.Errorf("failed to parse %s: %w", filePath, err)
+		}
+
+		// Объединяем теги
+		for _, tag := range doc.Tags {
+			if tagMap, ok := tag.(map[string]interface{}); ok {
+				if name, ok := tagMap["name"].(string); ok && !seenTags[name] {
+					merged.Tags = append(merged.Tags, tag)
+					seenTags[name] = true
+				}
+			}
+		}
+
+		// Объединяем пути
+		for path, methods := range doc.Paths {
+			merged.Paths[path] = methods
+		}
+
+		// Объединяем определения
+		for defName, def := range doc.Definitions {
+			merged.Definitions[defName] = def
+		}
+	}
+
+	result, err := json.Marshal(merged)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal merged swagger: %w", err)
+	}
+
+	return result, nil
 }
 
 func (a *App) MustRun() {
@@ -111,6 +190,7 @@ func (a *App) Run() error {
 		pb.RegisterUserServiceHandlerFromEndpoint,
 		pb.RegisterFileServiceHandlerFromEndpoint,
 		pb.RegisterLeadServiceHandlerFromEndpoint,
+		pb.RegisterDealServiceHandlerFromEndpoint,
 	} {
 		if err := register(ctx, gwMux, fmt.Sprintf("localhost:%d", a.port), opts); err != nil {
 			return fmt.Errorf("%s: %w", op, err)
@@ -121,20 +201,40 @@ func (a *App) Run() error {
 	httpMux := http.NewServeMux()
 	httpMux.Handle("/", gwMux)
 
-	// Маршруты для трёх swagger-файлов
 	swaggerMux := chi.NewMux()
 
-	swaggerFiles := map[string]string{
+	swaggerFiles := []string{
+		"pkg/auth.swagger.json",
+		"pkg/user.swagger.json",
+		"pkg/file.swagger.json",
+		"pkg/lead.swagger.json",
+		"pkg/deal.swagger.json",
+	}
+
+	// Объединённый swagger.json со всеми сервисами
+	swaggerMux.HandleFunc("/swagger/doc.json", func(w http.ResponseWriter, _ *http.Request) {
+		merged, err := mergeSwaggerFiles(swaggerFiles)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("failed to merge swagger files: %v", err), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(merged)
+	})
+
+	// Отдаём swagger.json для каждого сервиса отдельно (для обратной совместимости)
+	swaggerFileMap := map[string]string{
 		"/swagger/auth/doc.json": "pkg/auth.swagger.json",
 		"/swagger/user/doc.json": "pkg/user.swagger.json",
 		"/swagger/file/doc.json": "pkg/file.swagger.json",
 		"/swagger/lead/doc.json": "pkg/lead.swagger.json",
+		"/swagger/deal/doc.json": "pkg/deal.swagger.json",
 	}
 
-	// Отдаём swagger.json для каждого сервиса
-	for route, path := range swaggerFiles {
+	for route, path := range swaggerFileMap {
 		swPath := path // копия для замыкания
-		swaggerMux.HandleFunc(route, func(w http.ResponseWriter, _ *http.Request) {
+		swRoute := route
+		swaggerMux.HandleFunc(swRoute, func(w http.ResponseWriter, _ *http.Request) {
 			b, err := os.ReadFile(swPath)
 			if err != nil {
 				http.Error(w, fmt.Sprintf("swagger file not found: %s", swPath), http.StatusNotFound)
@@ -145,12 +245,9 @@ func (a *App) Run() error {
 		})
 	}
 
-	// Общий Swagger UI с выбором любого json
+	// Swagger UI с объединённым документом
 	swaggerMux.HandleFunc("/swagger/*", httpSwagger.Handler(
-		httpSwagger.URL("/swagger/auth/doc.json"), // по умолчанию откроется Auth
-		httpSwagger.URL("/swagger/user/doc.json"),
-		httpSwagger.URL("/swagger/file/doc.json"),
-		httpSwagger.URL("/swagger/lead/doc.json"),
+		httpSwagger.URL("/swagger/doc.json"),
 	))
 
 	httpMux.Handle("/swagger/", swaggerMux)

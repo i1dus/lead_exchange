@@ -190,20 +190,6 @@
         }
       }
     },
-    "ListLeadsRequestFilter": {
-      "type": "object",
-      "properties": {
-        "status": {
-          "$ref": "#/definitions/v1LeadStatus"
-        },
-        "ownerUserId": {
-          "type": "string"
-        },
-        "createdUserId": {
-          "type": "string"
-        }
-      }
-    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -322,6 +308,20 @@
       ],
       "default": "LEAD_STATUS_UNSPECIFIED",
       "description": "LeadStatus — статус лида.\n\n - LEAD_STATUS_UNSPECIFIED: Не задан (значение по умолчанию, не используется)\n - LEAD_STATUS_NEW: Создан, виден только создателю\n - LEAD_STATUS_PUBLISHED: Опубликован и доступен для покупки\n - LEAD_STATUS_PURCHASED: Куплен покупателем\n - LEAD_STATUS_DELETED: Удалён администратором"
+    },
+    "v1ListLeadsRequestFilter": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "$ref": "#/definitions/v1LeadStatus"
+        },
+        "ownerUserId": {
+          "type": "string"
+        },
+        "createdUserId": {
+          "type": "string"
+        }
+      }
     },
     "v1ListLeadsResponse": {
       "type": "object",

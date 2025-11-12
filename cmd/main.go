@@ -40,7 +40,7 @@ func main() {
 		panic(err)
 	}
 
-	application := app.New(log, cfg.GRPC.Port, pool, cfg.TokenTTL, cfg.Secret, minioClient)
+	application := app.New(log, cfg.GRPC.Port, pool, cfg.TokenTTL, cfg.Secret, minioClient, cfg.DisableAuth)
 
 	go func() {
 		application.GRPCServer.MustRun()

@@ -6,5 +6,6 @@ var (
 	ErrUserExists       = errors.New("user already exists")
 	ErrUserNotFound     = errors.New("user not found")
 	ErrLeadNotFound     = errors.New("lead not found")
+	ErrDealNotFound     = errors.New("deal not found")
 	ErrNoFieldsToUpdate = errors.New("no fields to update")
 )
