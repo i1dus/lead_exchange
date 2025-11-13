@@ -12,6 +12,7 @@ type Config struct {
 	GRPC        GRPCConfig
 	TokenTTL    time.Duration `env:"TOKEN_TTL" env-default:"1h"`
 	Secret      string        `env:"SECRET" env-required:"true"`
+	DisableAuth bool          `env:"DISABLE_AUTH" env-default:"false"`
 	Minio       MinioConfig
 }
 
