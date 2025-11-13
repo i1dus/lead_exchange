@@ -17,6 +17,10 @@ func (s *dealServer) CreateDeal(ctx context.Context, in *pb.CreateDealRequest) (
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
+	if err := s.checkUserStatus(ctx); err != nil {
+		return nil, err
+	}
+
 	userID, ok := middleware.FromContext(ctx)
 	if !ok {
 		return nil, status.Error(codes.Unauthenticated, "user not found in context")

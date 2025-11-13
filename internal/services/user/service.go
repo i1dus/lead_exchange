@@ -139,3 +139,22 @@ func (s *Service) UpdateProfile(ctx context.Context, userID uuid.UUID, update do
 func (s *Service) ListUsers(ctx context.Context, filter domain.UserFilter) ([]domain.User, error) {
 	return s.repo.ListUsers(ctx, filter)
 }
+
+// UpdateUserStatus — обновляет статус пользователя.
+func (s *Service) UpdateUserStatus(ctx context.Context, userID uuid.UUID, status domain.UserStatus) (domain.User, error) {
+	const op = "user.Service.UpdateUserStatus"
+
+	filter := domain.UserFilter{
+		Status: &status,
+	}
+
+	err := s.repo.UpdateUser(ctx, userID, filter)
+	if err != nil {
+		if errors.Is(err, repository.ErrUserNotFound) {
+			return domain.User{}, fmt.Errorf("%s: %w", op, repository.ErrUserNotFound)
+		}
+		return domain.User{}, fmt.Errorf("%s: %w", op, err)
+	}
+
+	return s.repo.GetByID(ctx, userID)
+}

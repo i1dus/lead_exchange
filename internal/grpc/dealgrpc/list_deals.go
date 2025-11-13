@@ -13,6 +13,10 @@ import (
 
 // ListDeals — получение списка сделок по фильтру.
 func (s *dealServer) ListDeals(ctx context.Context, in *pb.ListDealsRequest) (*pb.ListDealsResponse, error) {
+	if err := s.checkUserStatus(ctx); err != nil {
+		return nil, err
+	}
+
 	filter := domain.DealFilter{}
 
 	if in.Filter != nil {

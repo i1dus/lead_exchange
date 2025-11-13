@@ -82,7 +82,7 @@ func New(
 	usergrpc.RegisterUserServerGRPC(gRPCServer, userSvc)
 	filegrpc.RegisterFileServerGRPC(gRPCServer, minioClient)
 	leadgrpc.RegisterLeadServerGRPC(gRPCServer, leadSvc)
-	dealgrpc.RegisterDealServerGRPC(gRPCServer, dealSvc)
+	dealgrpc.RegisterDealServerGRPC(gRPCServer, dealSvc, userSvc)
 
 	return &App{
 		log:        log,

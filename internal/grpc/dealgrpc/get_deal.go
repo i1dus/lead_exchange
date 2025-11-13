@@ -16,6 +16,10 @@ func (s *dealServer) GetDeal(ctx context.Context, in *pb.GetDealRequest) (*pb.De
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
+	if err := s.checkUserStatus(ctx); err != nil {
+		return nil, err
+	}
+
 	dealID, err := uuid.Parse(in.DealId)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, fmt.Sprintf("invalid deal_id: %v", err))
