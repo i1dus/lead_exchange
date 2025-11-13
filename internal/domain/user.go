@@ -17,6 +17,7 @@ type User struct {
 	AgencyName   *string
 	AvatarURL    *string
 	Role         UserRole
+	Status       UserStatus
 	CreatedAt    time.Time
 }
 
@@ -33,6 +34,20 @@ func (r UserRole) String() string {
 	return string(r)
 }
 
+// UserStatus — тип статуса пользователя.
+type UserStatus string
+
+const (
+	UserStatusUnspecified UserStatus = ""
+	UserStatusActive      UserStatus = "ACTIVE"
+	UserStatusBanned      UserStatus = "BANNED"
+	UserStatusSuspended   UserStatus = "SUSPENDED"
+)
+
+func (s UserStatus) String() string {
+	return string(s)
+}
+
 // UserFilter — фильтр для выборок пользователей (например, в админке).
 type UserFilter struct {
 	Email      *string
@@ -42,4 +57,5 @@ type UserFilter struct {
 	AgencyName *string
 	AvatarURL  *string
 	Role       *UserRole
+	Status     *UserStatus
 }

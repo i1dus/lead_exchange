@@ -53,7 +53,7 @@ func (r *UserRepository) GetByID(ctx context.Context, id uuid.UUID) (domain.User
 	query := `
 		SELECT 
 			user_id, email, password_hash, first_name, last_name,
-			phone, agency_name, avatar_url, role, created_at
+			phone, agency_name, avatar_url, role, status, created_at
 		FROM users
 		WHERE user_id = $1
 	`
@@ -69,6 +69,7 @@ func (r *UserRepository) GetByID(ctx context.Context, id uuid.UUID) (domain.User
 		&u.AgencyName,
 		&u.AvatarURL,
 		&u.Role,
+		&u.Status,
 		&u.CreatedAt,
 	)
 
@@ -89,7 +90,7 @@ func (r *UserRepository) GetByEmail(ctx context.Context, email string) (domain.U
 	query := `
 		SELECT 
 			user_id, email, password_hash, first_name, last_name,
-			phone, agency_name, avatar_url, role, created_at
+			phone, agency_name, avatar_url, role, status, created_at
 		FROM users
 		WHERE email = $1
 	`
@@ -105,6 +106,7 @@ func (r *UserRepository) GetByEmail(ctx context.Context, email string) (domain.U
 		&u.AgencyName,
 		&u.AvatarURL,
 		&u.Role,
+		&u.Status,
 		&u.CreatedAt,
 	)
 
@@ -161,6 +163,11 @@ func (r *UserRepository) UpdateUser(ctx context.Context, userID uuid.UUID, updat
 		params = append(params, *update.AvatarURL)
 		paramCount++
 	}
+	if update.Status != nil {
+		setClauses = append(setClauses, fmt.Sprintf("status = $%d", paramCount))
+		params = append(params, *update.Status)
+		paramCount++
+	}
 
 	if len(setClauses) == 0 {
 		return fmt.Errorf("%s: %w", op, repository.ErrNoFieldsToUpdate)
@@ -191,13 +198,51 @@ func (r *UserRepository) ListUsers(ctx context.Context, filter domain.UserFilter
 	query := `
 		SELECT 
 			user_id, email, password_hash, first_name, last_name,
-			phone, agency_name, avatar_url, role, created_at
+			phone, agency_name, avatar_url, role, status, created_at
 		FROM users
 	`
 	params := []interface{}{}
+	whereClauses := []string{}
+	paramCount := 1
+
+	if filter.Email != nil {
+		whereClauses = append(whereClauses, fmt.Sprintf("email = $%d", paramCount))
+		params = append(params, *filter.Email)
+		paramCount++
+	}
+	if filter.FirstName != nil {
+		whereClauses = append(whereClauses, fmt.Sprintf("first_name = $%d", paramCount))
+		params = append(params, *filter.FirstName)
+		paramCount++
+	}
+	if filter.LastName != nil {
+		whereClauses = append(whereClauses, fmt.Sprintf("last_name = $%d", paramCount))
+		params = append(params, *filter.LastName)
+		paramCount++
+	}
+	if filter.Phone != nil {
+		whereClauses = append(whereClauses, fmt.Sprintf("phone = $%d", paramCount))
+		params = append(params, *filter.Phone)
+		paramCount++
+	}
+	if filter.AgencyName != nil {
+		whereClauses = append(whereClauses, fmt.Sprintf("agency_name = $%d", paramCount))
+		params = append(params, *filter.AgencyName)
+		paramCount++
+	}
 	if filter.Role != nil {
-		query += " WHERE role = $1"
+		whereClauses = append(whereClauses, fmt.Sprintf("role = $%d", paramCount))
 		params = append(params, *filter.Role)
+		paramCount++
+	}
+	if filter.Status != nil {
+		whereClauses = append(whereClauses, fmt.Sprintf("status = $%d", paramCount))
+		params = append(params, *filter.Status)
+		paramCount++
+	}
+
+	if len(whereClauses) > 0 {
+		query += " WHERE " + strings.Join(whereClauses, " AND ")
 	}
 
 	rows, err := r.db.Query(ctx, query, params...)
@@ -219,6 +264,7 @@ func (r *UserRepository) ListUsers(ctx context.Context, filter domain.UserFilter
 			&u.AgencyName,
 			&u.AvatarURL,
 			&u.Role,
+			&u.Status,
 			&u.CreatedAt,
 		)
 		if err != nil {
