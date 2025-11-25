@@ -22,6 +22,7 @@ type GRPCConfig struct {
 }
 
 type MinioConfig struct {
+	Enabled           bool   `env:"MINIO_ENABLE" env-default:"false"`
 	Port              int    `env:"MINIO_PORT" env-default:"9000"`
 	MinioEndpoint     string `env:"MINIO_ENDPOINT"`
 	BucketName        string `env:"MINIO_BUCKET"`

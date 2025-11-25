@@ -80,9 +80,11 @@ func New(
 	// ✅ Регистрируем все gRPC сервера
 	authgrpc.RegisterAuthServerGRPC(gRPCServer, authSvc)
 	usergrpc.RegisterUserServerGRPC(gRPCServer, userSvc)
-	filegrpc.RegisterFileServerGRPC(gRPCServer, minioClient)
 	leadgrpc.RegisterLeadServerGRPC(gRPCServer, leadSvc)
 	dealgrpc.RegisterDealServerGRPC(gRPCServer, dealSvc)
+	if minioClient != nil {
+		filegrpc.RegisterFileServerGRPC(gRPCServer, minioClient)
+	}
 
 	return &App{
 		log:        log,

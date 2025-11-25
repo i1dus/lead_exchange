@@ -34,10 +34,13 @@ func main() {
 	}
 	defer pool.Close()
 
-	minioClient := minio.NewMinioClient()
-	err = minioClient.InitMinio(cfg.Minio)
-	if err != nil {
-		panic(err)
+	var minioClient minio.Client
+	if cfg.Minio.Enabled {
+		minioClient = minio.NewMinioClient()
+		err = minioClient.InitMinio(cfg.Minio)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	application := app.New(log, cfg.GRPC.Port, pool, cfg.TokenTTL, cfg.Secret, minioClient, cfg.DisableAuth)
