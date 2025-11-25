@@ -23,12 +23,43 @@ service UserService {
       body: "*"
     };
   }
+
+  // Изменить статус пользователя.
+  rpc UpdateUserStatus (UpdateUserStatusRequest) returns (UserProfile) {
+    option (google.api.http) = {
+      patch: "/v1/user/{user_id}/status"
+      body: "*"
+    };
+  }
+
+  // Получить список пользователей.
+  rpc ListUsers (ListUsersRequest) returns (ListUsersResponse) {
+    option (google.api.http) = {
+      get: "/v1/users"
+    };
+  }
 }
 
+// UserRole — роль пользователя.
 enum UserRole {
+  // Не задан (значение по умолчанию, не используется)
   USER_ROLE_UNSPECIFIED = 0;
+  // Обычный пользователь
   USER_ROLE_USER = 1;
+  // Администратор
   USER_ROLE_ADMIN = 2;
+}
+
+// UserStatus — статус пользователя.
+enum UserStatus {
+  // Не задан (значение по умолчанию, не используется)
+  USER_STATUS_UNSPECIFIED = 0;
+  // Активен, может использовать систему
+  USER_STATUS_ACTIVE = 1;
+  // Заблокирован, доступ запрещён
+  USER_STATUS_BANNED = 2;
+  // Временно приостановлен
+  USER_STATUS_SUSPENDED = 3;
 }
 
 message UserProfile {
@@ -40,6 +71,7 @@ message UserProfile {
   optional string agency_name = 6;
   optional string avatar_url = 7;
   UserRole role = 8;
+  UserStatus status = 9;
 }
 
 message UpdateProfileRequest {
@@ -48,4 +80,27 @@ message UpdateProfileRequest {
   optional string phone = 3 [(validate.rules).string = {pattern: "^\\+?[0-9]{10,15}$"}];
   optional string agency_name = 4;
   optional string avatar_url = 5;
+}
+
+message UpdateUserStatusRequest {
+  string user_id = 1 [(validate.rules).string.uuid = true];
+  UserStatus status = 2 [(validate.rules).enum = {not_in: [0]}];
+}
+
+message ListUsersRequest {
+  optional Filter filter = 1;
+
+  message Filter {
+    optional string email = 1;
+    optional string first_name = 2;
+    optional string last_name = 3;
+    optional string phone = 4;
+    optional string agency_name = 5;
+    optional UserRole role = 6;
+    optional UserStatus status = 7;
+  }
+}
+
+message ListUsersResponse {
+  repeated UserProfile users = 1;
 }

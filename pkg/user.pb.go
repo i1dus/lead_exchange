@@ -24,12 +24,16 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// UserRole — роль пользователя.
 type UserRole int32
 
 const (
+	// Не задан (значение по умолчанию, не используется)
 	UserRole_USER_ROLE_UNSPECIFIED UserRole = 0
-	UserRole_USER_ROLE_USER        UserRole = 1
-	UserRole_USER_ROLE_ADMIN       UserRole = 2
+	// Обычный пользователь
+	UserRole_USER_ROLE_USER UserRole = 1
+	// Администратор
+	UserRole_USER_ROLE_ADMIN UserRole = 2
 )
 
 // Enum value maps for UserRole.
@@ -73,6 +77,63 @@ func (UserRole) EnumDescriptor() ([]byte, []int) {
 	return file_user_proto_rawDescGZIP(), []int{0}
 }
 
+// UserStatus — статус пользователя.
+type UserStatus int32
+
+const (
+	// Не задан (значение по умолчанию, не используется)
+	UserStatus_USER_STATUS_UNSPECIFIED UserStatus = 0
+	// Активен, может использовать систему
+	UserStatus_USER_STATUS_ACTIVE UserStatus = 1
+	// Заблокирован, доступ запрещён
+	UserStatus_USER_STATUS_BANNED UserStatus = 2
+	// Временно приостановлен
+	UserStatus_USER_STATUS_SUSPENDED UserStatus = 3
+)
+
+// Enum value maps for UserStatus.
+var (
+	UserStatus_name = map[int32]string{
+		0: "USER_STATUS_UNSPECIFIED",
+		1: "USER_STATUS_ACTIVE",
+		2: "USER_STATUS_BANNED",
+		3: "USER_STATUS_SUSPENDED",
+	}
+	UserStatus_value = map[string]int32{
+		"USER_STATUS_UNSPECIFIED": 0,
+		"USER_STATUS_ACTIVE":      1,
+		"USER_STATUS_BANNED":      2,
+		"USER_STATUS_SUSPENDED":   3,
+	}
+)
+
+func (x UserStatus) Enum() *UserStatus {
+	p := new(UserStatus)
+	*p = x
+	return p
+}
+
+func (x UserStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (UserStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_user_proto_enumTypes[1].Descriptor()
+}
+
+func (UserStatus) Type() protoreflect.EnumType {
+	return &file_user_proto_enumTypes[1]
+}
+
+func (x UserStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use UserStatus.Descriptor instead.
+func (UserStatus) EnumDescriptor() ([]byte, []int) {
+	return file_user_proto_rawDescGZIP(), []int{1}
+}
+
 type UserProfile struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -83,6 +144,7 @@ type UserProfile struct {
 	AgencyName    *string                `protobuf:"bytes,6,opt,name=agency_name,json=agencyName,proto3,oneof" json:"agency_name,omitempty"`
 	AvatarUrl     *string                `protobuf:"bytes,7,opt,name=avatar_url,json=avatarUrl,proto3,oneof" json:"avatar_url,omitempty"`
 	Role          UserRole               `protobuf:"varint,8,opt,name=role,proto3,enum=leadexchange.v1.UserRole" json:"role,omitempty"`
+	Status        UserStatus             `protobuf:"varint,9,opt,name=status,proto3,enum=leadexchange.v1.UserStatus" json:"status,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -173,6 +235,13 @@ func (x *UserProfile) GetRole() UserRole {
 	return UserRole_USER_ROLE_UNSPECIFIED
 }
 
+func (x *UserProfile) GetStatus() UserStatus {
+	if x != nil {
+		return x.Status
+	}
+	return UserStatus_USER_STATUS_UNSPECIFIED
+}
+
 type UpdateProfileRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	FirstName     *string                `protobuf:"bytes,1,opt,name=first_name,json=firstName,proto3,oneof" json:"first_name,omitempty"`
@@ -249,12 +318,244 @@ func (x *UpdateProfileRequest) GetAvatarUrl() string {
 	return ""
 }
 
+type UpdateUserStatusRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Status        UserStatus             `protobuf:"varint,2,opt,name=status,proto3,enum=leadexchange.v1.UserStatus" json:"status,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateUserStatusRequest) Reset() {
+	*x = UpdateUserStatusRequest{}
+	mi := &file_user_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateUserStatusRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateUserStatusRequest) ProtoMessage() {}
+
+func (x *UpdateUserStatusRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_user_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateUserStatusRequest.ProtoReflect.Descriptor instead.
+func (*UpdateUserStatusRequest) Descriptor() ([]byte, []int) {
+	return file_user_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *UpdateUserStatusRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *UpdateUserStatusRequest) GetStatus() UserStatus {
+	if x != nil {
+		return x.Status
+	}
+	return UserStatus_USER_STATUS_UNSPECIFIED
+}
+
+type ListUsersRequest struct {
+	state         protoimpl.MessageState   `protogen:"open.v1"`
+	Filter        *ListUsersRequest_Filter `protobuf:"bytes,1,opt,name=filter,proto3,oneof" json:"filter,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListUsersRequest) Reset() {
+	*x = ListUsersRequest{}
+	mi := &file_user_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListUsersRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListUsersRequest) ProtoMessage() {}
+
+func (x *ListUsersRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_user_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListUsersRequest.ProtoReflect.Descriptor instead.
+func (*ListUsersRequest) Descriptor() ([]byte, []int) {
+	return file_user_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *ListUsersRequest) GetFilter() *ListUsersRequest_Filter {
+	if x != nil {
+		return x.Filter
+	}
+	return nil
+}
+
+type ListUsersResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Users         []*UserProfile         `protobuf:"bytes,1,rep,name=users,proto3" json:"users,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListUsersResponse) Reset() {
+	*x = ListUsersResponse{}
+	mi := &file_user_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListUsersResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListUsersResponse) ProtoMessage() {}
+
+func (x *ListUsersResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_user_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListUsersResponse.ProtoReflect.Descriptor instead.
+func (*ListUsersResponse) Descriptor() ([]byte, []int) {
+	return file_user_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *ListUsersResponse) GetUsers() []*UserProfile {
+	if x != nil {
+		return x.Users
+	}
+	return nil
+}
+
+type ListUsersRequest_Filter struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Email         *string                `protobuf:"bytes,1,opt,name=email,proto3,oneof" json:"email,omitempty"`
+	FirstName     *string                `protobuf:"bytes,2,opt,name=first_name,json=firstName,proto3,oneof" json:"first_name,omitempty"`
+	LastName      *string                `protobuf:"bytes,3,opt,name=last_name,json=lastName,proto3,oneof" json:"last_name,omitempty"`
+	Phone         *string                `protobuf:"bytes,4,opt,name=phone,proto3,oneof" json:"phone,omitempty"`
+	AgencyName    *string                `protobuf:"bytes,5,opt,name=agency_name,json=agencyName,proto3,oneof" json:"agency_name,omitempty"`
+	Role          *UserRole              `protobuf:"varint,6,opt,name=role,proto3,enum=leadexchange.v1.UserRole,oneof" json:"role,omitempty"`
+	Status        *UserStatus            `protobuf:"varint,7,opt,name=status,proto3,enum=leadexchange.v1.UserStatus,oneof" json:"status,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListUsersRequest_Filter) Reset() {
+	*x = ListUsersRequest_Filter{}
+	mi := &file_user_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListUsersRequest_Filter) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListUsersRequest_Filter) ProtoMessage() {}
+
+func (x *ListUsersRequest_Filter) ProtoReflect() protoreflect.Message {
+	mi := &file_user_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListUsersRequest_Filter.ProtoReflect.Descriptor instead.
+func (*ListUsersRequest_Filter) Descriptor() ([]byte, []int) {
+	return file_user_proto_rawDescGZIP(), []int{3, 0}
+}
+
+func (x *ListUsersRequest_Filter) GetEmail() string {
+	if x != nil && x.Email != nil {
+		return *x.Email
+	}
+	return ""
+}
+
+func (x *ListUsersRequest_Filter) GetFirstName() string {
+	if x != nil && x.FirstName != nil {
+		return *x.FirstName
+	}
+	return ""
+}
+
+func (x *ListUsersRequest_Filter) GetLastName() string {
+	if x != nil && x.LastName != nil {
+		return *x.LastName
+	}
+	return ""
+}
+
+func (x *ListUsersRequest_Filter) GetPhone() string {
+	if x != nil && x.Phone != nil {
+		return *x.Phone
+	}
+	return ""
+}
+
+func (x *ListUsersRequest_Filter) GetAgencyName() string {
+	if x != nil && x.AgencyName != nil {
+		return *x.AgencyName
+	}
+	return ""
+}
+
+func (x *ListUsersRequest_Filter) GetRole() UserRole {
+	if x != nil && x.Role != nil {
+		return *x.Role
+	}
+	return UserRole_USER_ROLE_UNSPECIFIED
+}
+
+func (x *ListUsersRequest_Filter) GetStatus() UserStatus {
+	if x != nil && x.Status != nil {
+		return *x.Status
+	}
+	return UserStatus_USER_STATUS_UNSPECIFIED
+}
+
 var File_user_proto protoreflect.FileDescriptor
 
 const file_user_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
-	"user.proto\x12\x0fleadexchange.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x17validate/validate.proto\"\xac\x02\n" +
+	"user.proto\x12\x0fleadexchange.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x17validate/validate.proto\"\xe1\x02\n" +
 	"\vUserProfile\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1d\n" +
@@ -266,7 +567,8 @@ const file_user_proto_rawDesc = "" +
 	"agencyName\x88\x01\x01\x12\"\n" +
 	"\n" +
 	"avatar_url\x18\a \x01(\tH\x02R\tavatarUrl\x88\x01\x01\x12-\n" +
-	"\x04role\x18\b \x01(\x0e2\x19.leadexchange.v1.UserRoleR\x04roleB\b\n" +
+	"\x04role\x18\b \x01(\x0e2\x19.leadexchange.v1.UserRoleR\x04role\x123\n" +
+	"\x06status\x18\t \x01(\x0e2\x1b.leadexchange.v1.UserStatusR\x06statusB\b\n" +
 	"\x06_phoneB\x0e\n" +
 	"\f_agency_nameB\r\n" +
 	"\v_avatar_url\"\xb7\x02\n" +
@@ -284,15 +586,49 @@ const file_user_proto_rawDesc = "" +
 	"_last_nameB\b\n" +
 	"\x06_phoneB\x0e\n" +
 	"\f_agency_nameB\r\n" +
-	"\v_avatar_url*N\n" +
+	"\v_avatar_url\"{\n" +
+	"\x17UpdateUserStatusRequest\x12!\n" +
+	"\auser_id\x18\x01 \x01(\tB\b\xfaB\x05r\x03\xb0\x01\x01R\x06userId\x12=\n" +
+	"\x06status\x18\x02 \x01(\x0e2\x1b.leadexchange.v1.UserStatusB\b\xfaB\x05\x82\x01\x02 \x00R\x06status\"\xd4\x03\n" +
+	"\x10ListUsersRequest\x12E\n" +
+	"\x06filter\x18\x01 \x01(\v2(.leadexchange.v1.ListUsersRequest.FilterH\x00R\x06filter\x88\x01\x01\x1a\xed\x02\n" +
+	"\x06Filter\x12\x19\n" +
+	"\x05email\x18\x01 \x01(\tH\x00R\x05email\x88\x01\x01\x12\"\n" +
+	"\n" +
+	"first_name\x18\x02 \x01(\tH\x01R\tfirstName\x88\x01\x01\x12 \n" +
+	"\tlast_name\x18\x03 \x01(\tH\x02R\blastName\x88\x01\x01\x12\x19\n" +
+	"\x05phone\x18\x04 \x01(\tH\x03R\x05phone\x88\x01\x01\x12$\n" +
+	"\vagency_name\x18\x05 \x01(\tH\x04R\n" +
+	"agencyName\x88\x01\x01\x122\n" +
+	"\x04role\x18\x06 \x01(\x0e2\x19.leadexchange.v1.UserRoleH\x05R\x04role\x88\x01\x01\x128\n" +
+	"\x06status\x18\a \x01(\x0e2\x1b.leadexchange.v1.UserStatusH\x06R\x06status\x88\x01\x01B\b\n" +
+	"\x06_emailB\r\n" +
+	"\v_first_nameB\f\n" +
+	"\n" +
+	"_last_nameB\b\n" +
+	"\x06_phoneB\x0e\n" +
+	"\f_agency_nameB\a\n" +
+	"\x05_roleB\t\n" +
+	"\a_statusB\t\n" +
+	"\a_filter\"G\n" +
+	"\x11ListUsersResponse\x122\n" +
+	"\x05users\x18\x01 \x03(\v2\x1c.leadexchange.v1.UserProfileR\x05users*N\n" +
 	"\bUserRole\x12\x19\n" +
 	"\x15USER_ROLE_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eUSER_ROLE_USER\x10\x01\x12\x13\n" +
-	"\x0fUSER_ROLE_ADMIN\x10\x022\xde\x01\n" +
+	"\x0fUSER_ROLE_ADMIN\x10\x02*t\n" +
+	"\n" +
+	"UserStatus\x12\x1b\n" +
+	"\x17USER_STATUS_UNSPECIFIED\x10\x00\x12\x16\n" +
+	"\x12USER_STATUS_ACTIVE\x10\x01\x12\x16\n" +
+	"\x12USER_STATUS_BANNED\x10\x02\x12\x19\n" +
+	"\x15USER_STATUS_SUSPENDED\x10\x032\xc8\x03\n" +
 	"\vUserService\x12\\\n" +
 	"\n" +
 	"GetProfile\x12\x16.google.protobuf.Empty\x1a\x1c.leadexchange.v1.UserProfile\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/v1/user/profile\x12q\n" +
-	"\rUpdateProfile\x12%.leadexchange.v1.UpdateProfileRequest\x1a\x1c.leadexchange.v1.UserProfile\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*2\x10/v1/user/profileB4Z2leadexchange/gen/go/leadexchange/v1;leadexchangev1b\x06proto3"
+	"\rUpdateProfile\x12%.leadexchange.v1.UpdateProfileRequest\x1a\x1c.leadexchange.v1.UserProfile\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*2\x10/v1/user/profile\x12\x80\x01\n" +
+	"\x10UpdateUserStatus\x12(.leadexchange.v1.UpdateUserStatusRequest\x1a\x1c.leadexchange.v1.UserProfile\"$\x82\xd3\xe4\x93\x02\x1e:\x01*2\x19/v1/user/{user_id}/status\x12e\n" +
+	"\tListUsers\x12!.leadexchange.v1.ListUsersRequest\x1a\".leadexchange.v1.ListUsersResponse\"\x11\x82\xd3\xe4\x93\x02\v\x12\t/v1/usersB4Z2leadexchange/gen/go/leadexchange/v1;leadexchangev1b\x06proto3"
 
 var (
 	file_user_proto_rawDescOnce sync.Once
@@ -306,25 +642,40 @@ func file_user_proto_rawDescGZIP() []byte {
 	return file_user_proto_rawDescData
 }
 
-var file_user_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_user_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_user_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_user_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_user_proto_goTypes = []any{
-	(UserRole)(0),                // 0: leadexchange.v1.UserRole
-	(*UserProfile)(nil),          // 1: leadexchange.v1.UserProfile
-	(*UpdateProfileRequest)(nil), // 2: leadexchange.v1.UpdateProfileRequest
-	(*emptypb.Empty)(nil),        // 3: google.protobuf.Empty
+	(UserRole)(0),                   // 0: leadexchange.v1.UserRole
+	(UserStatus)(0),                 // 1: leadexchange.v1.UserStatus
+	(*UserProfile)(nil),             // 2: leadexchange.v1.UserProfile
+	(*UpdateProfileRequest)(nil),    // 3: leadexchange.v1.UpdateProfileRequest
+	(*UpdateUserStatusRequest)(nil), // 4: leadexchange.v1.UpdateUserStatusRequest
+	(*ListUsersRequest)(nil),        // 5: leadexchange.v1.ListUsersRequest
+	(*ListUsersResponse)(nil),       // 6: leadexchange.v1.ListUsersResponse
+	(*ListUsersRequest_Filter)(nil), // 7: leadexchange.v1.ListUsersRequest.Filter
+	(*emptypb.Empty)(nil),           // 8: google.protobuf.Empty
 }
 var file_user_proto_depIdxs = []int32{
-	0, // 0: leadexchange.v1.UserProfile.role:type_name -> leadexchange.v1.UserRole
-	3, // 1: leadexchange.v1.UserService.GetProfile:input_type -> google.protobuf.Empty
-	2, // 2: leadexchange.v1.UserService.UpdateProfile:input_type -> leadexchange.v1.UpdateProfileRequest
-	1, // 3: leadexchange.v1.UserService.GetProfile:output_type -> leadexchange.v1.UserProfile
-	1, // 4: leadexchange.v1.UserService.UpdateProfile:output_type -> leadexchange.v1.UserProfile
-	3, // [3:5] is the sub-list for method output_type
-	1, // [1:3] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	0,  // 0: leadexchange.v1.UserProfile.role:type_name -> leadexchange.v1.UserRole
+	1,  // 1: leadexchange.v1.UserProfile.status:type_name -> leadexchange.v1.UserStatus
+	1,  // 2: leadexchange.v1.UpdateUserStatusRequest.status:type_name -> leadexchange.v1.UserStatus
+	7,  // 3: leadexchange.v1.ListUsersRequest.filter:type_name -> leadexchange.v1.ListUsersRequest.Filter
+	2,  // 4: leadexchange.v1.ListUsersResponse.users:type_name -> leadexchange.v1.UserProfile
+	0,  // 5: leadexchange.v1.ListUsersRequest.Filter.role:type_name -> leadexchange.v1.UserRole
+	1,  // 6: leadexchange.v1.ListUsersRequest.Filter.status:type_name -> leadexchange.v1.UserStatus
+	8,  // 7: leadexchange.v1.UserService.GetProfile:input_type -> google.protobuf.Empty
+	3,  // 8: leadexchange.v1.UserService.UpdateProfile:input_type -> leadexchange.v1.UpdateProfileRequest
+	4,  // 9: leadexchange.v1.UserService.UpdateUserStatus:input_type -> leadexchange.v1.UpdateUserStatusRequest
+	5,  // 10: leadexchange.v1.UserService.ListUsers:input_type -> leadexchange.v1.ListUsersRequest
+	2,  // 11: leadexchange.v1.UserService.GetProfile:output_type -> leadexchange.v1.UserProfile
+	2,  // 12: leadexchange.v1.UserService.UpdateProfile:output_type -> leadexchange.v1.UserProfile
+	2,  // 13: leadexchange.v1.UserService.UpdateUserStatus:output_type -> leadexchange.v1.UserProfile
+	6,  // 14: leadexchange.v1.UserService.ListUsers:output_type -> leadexchange.v1.ListUsersResponse
+	11, // [11:15] is the sub-list for method output_type
+	7,  // [7:11] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_user_proto_init() }
@@ -334,13 +685,15 @@ func file_user_proto_init() {
 	}
 	file_user_proto_msgTypes[0].OneofWrappers = []any{}
 	file_user_proto_msgTypes[1].OneofWrappers = []any{}
+	file_user_proto_msgTypes[3].OneofWrappers = []any{}
+	file_user_proto_msgTypes[5].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_user_proto_rawDesc), len(file_user_proto_rawDesc)),
-			NumEnums:      1,
-			NumMessages:   2,
+			NumEnums:      2,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

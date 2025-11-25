@@ -81,7 +81,7 @@ func New(
 	authgrpc.RegisterAuthServerGRPC(gRPCServer, authSvc)
 	usergrpc.RegisterUserServerGRPC(gRPCServer, userSvc)
 	leadgrpc.RegisterLeadServerGRPC(gRPCServer, leadSvc)
-	dealgrpc.RegisterDealServerGRPC(gRPCServer, dealSvc)
+	dealgrpc.RegisterDealServerGRPC(gRPCServer, dealSvc, userSvc)
 	if minioClient != nil {
 		filegrpc.RegisterFileServerGRPC(gRPCServer, minioClient)
 	}

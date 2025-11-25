@@ -13,6 +13,8 @@ import (
 type UserService interface {
 	GetProfile(ctx context.Context, userID uuid.UUID) (domain.User, error)
 	UpdateProfile(ctx context.Context, userID uuid.UUID, update domain.UserFilter) (domain.User, error)
+	UpdateUserStatus(ctx context.Context, userID uuid.UUID, status domain.UserStatus) (domain.User, error)
+	ListUsers(ctx context.Context, filter domain.UserFilter) ([]domain.User, error)
 }
 
 // userServer реализует gRPC UserServiceServer.
