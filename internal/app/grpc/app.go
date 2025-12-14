@@ -9,6 +9,7 @@ import (
 	"lead_exchange/internal/grpc/dealgrpc"
 	"lead_exchange/internal/grpc/filegrpc"
 	"lead_exchange/internal/grpc/leadgrpc"
+	"lead_exchange/internal/grpc/propertygrpc"
 	"lead_exchange/internal/grpc/usergrpc"
 	minio "lead_exchange/internal/lib/minio/core"
 	"lead_exchange/internal/middleware"
@@ -39,7 +40,7 @@ type App struct {
 	port       int
 }
 
-// New создаёт gRPC + HTTP (Gateway) сервер с Auth, User, File, Lead и Deal сервисами.
+// New создаёт gRPC + HTTP (Gateway) сервер с Auth, User, File, Lead, Deal и Property сервисами.
 func New(
 	log *slog.Logger,
 	authSvc authgrpc.AuthService,
@@ -47,6 +48,7 @@ func New(
 	minioClient minio.Client,
 	leadSvc leadgrpc.LeadService,
 	dealSvc dealgrpc.DealService,
+	propertySvc propertygrpc.PropertyService,
 	port int,
 	secret string,
 	disableAuth bool,
@@ -82,6 +84,7 @@ func New(
 	usergrpc.RegisterUserServerGRPC(gRPCServer, userSvc)
 	leadgrpc.RegisterLeadServerGRPC(gRPCServer, leadSvc)
 	dealgrpc.RegisterDealServerGRPC(gRPCServer, dealSvc, userSvc)
+	propertygrpc.RegisterPropertyServerGRPC(gRPCServer, propertySvc)
 	if minioClient != nil {
 		filegrpc.RegisterFileServerGRPC(gRPCServer, minioClient)
 	}
@@ -193,6 +196,7 @@ func (a *App) Run() error {
 		pb.RegisterFileServiceHandlerFromEndpoint,
 		pb.RegisterLeadServiceHandlerFromEndpoint,
 		pb.RegisterDealServiceHandlerFromEndpoint,
+		pb.RegisterPropertyServiceHandlerFromEndpoint,
 	} {
 		if err := register(ctx, gwMux, fmt.Sprintf("localhost:%d", a.port), opts); err != nil {
 			return fmt.Errorf("%s: %w", op, err)
@@ -211,6 +215,7 @@ func (a *App) Run() error {
 		"pkg/file.swagger.json",
 		"pkg/lead.swagger.json",
 		"pkg/deal.swagger.json",
+		"pkg/property.swagger.json",
 	}
 
 	// Объединённый swagger.json со всеми сервисами
@@ -226,11 +231,12 @@ func (a *App) Run() error {
 
 	// Отдаём swagger.json для каждого сервиса отдельно (для обратной совместимости)
 	swaggerFileMap := map[string]string{
-		"/swagger/auth/doc.json": "pkg/auth.swagger.json",
-		"/swagger/user/doc.json": "pkg/user.swagger.json",
-		"/swagger/file/doc.json": "pkg/file.swagger.json",
-		"/swagger/lead/doc.json": "pkg/lead.swagger.json",
-		"/swagger/deal/doc.json": "pkg/deal.swagger.json",
+		"/swagger/auth/doc.json":     "pkg/auth.swagger.json",
+		"/swagger/user/doc.json":      "pkg/user.swagger.json",
+		"/swagger/file/doc.json":      "pkg/file.swagger.json",
+		"/swagger/lead/doc.json":      "pkg/lead.swagger.json",
+		"/swagger/deal/doc.json":      "pkg/deal.swagger.json",
+		"/swagger/property/doc.json":  "pkg/property.swagger.json",
 	}
 
 	for route, path := range swaggerFileMap {

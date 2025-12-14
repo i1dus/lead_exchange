@@ -4,8 +4,10 @@ import (
 	minio "lead_exchange/internal/lib/minio/core"
 	"lead_exchange/internal/repository/deal_repository"
 	"lead_exchange/internal/repository/lead_repository"
+	"lead_exchange/internal/repository/property_repository"
 	"lead_exchange/internal/services/deal"
 	"lead_exchange/internal/services/lead"
+	"lead_exchange/internal/services/property"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
@@ -28,12 +30,14 @@ func New(
 	userRepository := user_repository.NewUserRepository(pool, log)
 	leadRepository := lead_repository.NewLeadRepository(pool, log)
 	dealRepository := deal_repository.NewDealRepository(pool, log)
+	propertyRepository := property_repository.NewPropertyRepository(pool, log)
 
 	userService := user.New(log, userRepository, tokenTTL, secret)
 	leadService := lead.New(log, leadRepository)
 	dealService := deal.New(log, dealRepository)
+	propertyService := property.New(log, propertyRepository)
 
-	grpcApp := grpcapp.New(log, userService, userService, minioClient, leadService, dealService, grpcPort, secret, disableAuth)
+	grpcApp := grpcapp.New(log, userService, userService, minioClient, leadService, dealService, propertyService, grpcPort, secret, disableAuth)
 
 	return &App{
 		GRPCServer: grpcApp,

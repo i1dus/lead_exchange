@@ -14,6 +14,7 @@ type Config struct {
 	Secret      string        `env:"SECRET" env-required:"true"`
 	DisableAuth bool          `env:"DISABLE_AUTH" env-default:"false"`
 	Minio       MinioConfig
+	ML          MLConfig
 }
 
 type GRPCConfig struct {
@@ -29,6 +30,12 @@ type MinioConfig struct {
 	MinioRootUser     string `env:"MINIO_USER"`
 	MinioRootPassword string `env:"MINIO_PASSWORD"`
 	MinioUseSSL       bool   `env:"MINIO_USE_SSL"`
+}
+
+type MLConfig struct {
+	Enabled  bool   `env:"ML_ENABLE" env-default:"true"`
+	BaseURL  string `env:"ML_BASE_URL" env-default:"https://calcifer0323-matching.hf.space"`
+	Timeout  time.Duration `env:"ML_TIMEOUT" env-default:"30s"`
 }
 
 func MustLoad() *Config {
