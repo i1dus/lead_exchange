@@ -19,6 +19,8 @@ type Property struct {
 	Status        PropertyStatus
 	OwnerUserID   uuid.UUID
 	CreatedUserID uuid.UUID
+	// Embedding — векторное представление для матчинга (pgvector)
+	Embedding     []float32
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 }
@@ -69,5 +71,11 @@ type PropertyFilter struct {
 	Status        *PropertyStatus
 	OwnerUserID   *uuid.UUID
 	CreatedUserID *uuid.UUID
+}
+
+// MatchedProperty — результат матчинга с коэффициентом схожести.
+type MatchedProperty struct {
+	Property   Property
+	Similarity float64 // Коэффициент схожести (1 - расстояние)
 }
 

@@ -142,6 +142,40 @@
         ]
       }
     },
+    "/v1/properties/match": {
+      "post": {
+        "summary": "Найти подходящие объекты недвижимости для лида по векторному сходству.",
+        "operationId": "PropertyService_MatchProperties",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1MatchPropertiesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "MatchPropertiesRequest — запрос на поиск подходящих объектов для лида.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1MatchPropertiesRequest"
+            }
+          }
+        ],
+        "tags": [
+          "PropertyService"
+        ]
+      }
+    },
     "/v1/properties/{propertyId}": {
       "get": {
         "summary": "Получить информацию о конкретном объекте недвижимости.",
@@ -348,6 +382,77 @@
           }
         }
       }
+    },
+    "v1MatchPropertiesRequest": {
+      "type": "object",
+      "properties": {
+        "leadId": {
+          "type": "string"
+        },
+        "filter": {
+          "$ref": "#/definitions/v1MatchPropertiesRequestFilter"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int32",
+          "title": "Лимит результатов (по умолчанию 10)"
+        }
+      },
+      "description": "MatchPropertiesRequest — запрос на поиск подходящих объектов для лида."
+    },
+    "v1MatchPropertiesRequestFilter": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "$ref": "#/definitions/v1PropertyStatus"
+        },
+        "propertyType": {
+          "$ref": "#/definitions/v1PropertyType"
+        },
+        "minRooms": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxRooms": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "minPrice": {
+          "type": "string",
+          "format": "int64"
+        },
+        "maxPrice": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "v1MatchPropertiesResponse": {
+      "type": "object",
+      "properties": {
+        "matches": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1MatchedProperty"
+          }
+        }
+      },
+      "description": "MatchPropertiesResponse — ответ с подходящими объектами."
+    },
+    "v1MatchedProperty": {
+      "type": "object",
+      "properties": {
+        "property": {
+          "$ref": "#/definitions/v1Property"
+        },
+        "similarity": {
+          "type": "number",
+          "format": "double",
+          "title": "Коэффициент схожести (0-1, где 1 - полное совпадение)"
+        }
+      },
+      "description": "MatchedProperty — объект недвижимости с коэффициентом схожести."
     },
     "v1Property": {
       "type": "object",

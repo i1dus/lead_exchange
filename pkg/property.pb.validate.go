@@ -1040,6 +1040,428 @@ var _ interface {
 	ErrorName() string
 } = PropertyResponseValidationError{}
 
+// Validate checks the field values on MatchPropertiesRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *MatchPropertiesRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on MatchPropertiesRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// MatchPropertiesRequestMultiError, or nil if none found.
+func (m *MatchPropertiesRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *MatchPropertiesRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if err := m._validateUuid(m.GetLeadId()); err != nil {
+		err = MatchPropertiesRequestValidationError{
+			field:  "LeadId",
+			reason: "value must be a valid UUID",
+			cause:  err,
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if all {
+		switch v := interface{}(m.GetFilter()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, MatchPropertiesRequestValidationError{
+					field:  "Filter",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, MatchPropertiesRequestValidationError{
+					field:  "Filter",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetFilter()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return MatchPropertiesRequestValidationError{
+				field:  "Filter",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if m.Limit != nil {
+		// no validation rules for Limit
+	}
+
+	if len(errors) > 0 {
+		return MatchPropertiesRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+func (m *MatchPropertiesRequest) _validateUuid(uuid string) error {
+	if matched := _property_uuidPattern.MatchString(uuid); !matched {
+		return errors.New("invalid uuid format")
+	}
+
+	return nil
+}
+
+// MatchPropertiesRequestMultiError is an error wrapping multiple validation
+// errors returned by MatchPropertiesRequest.ValidateAll() if the designated
+// constraints aren't met.
+type MatchPropertiesRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m MatchPropertiesRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m MatchPropertiesRequestMultiError) AllErrors() []error { return m }
+
+// MatchPropertiesRequestValidationError is the validation error returned by
+// MatchPropertiesRequest.Validate if the designated constraints aren't met.
+type MatchPropertiesRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e MatchPropertiesRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e MatchPropertiesRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e MatchPropertiesRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e MatchPropertiesRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e MatchPropertiesRequestValidationError) ErrorName() string {
+	return "MatchPropertiesRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e MatchPropertiesRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sMatchPropertiesRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = MatchPropertiesRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = MatchPropertiesRequestValidationError{}
+
+// Validate checks the field values on MatchedProperty with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *MatchedProperty) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on MatchedProperty with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// MatchedPropertyMultiError, or nil if none found.
+func (m *MatchedProperty) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *MatchedProperty) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetProperty()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, MatchedPropertyValidationError{
+					field:  "Property",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, MatchedPropertyValidationError{
+					field:  "Property",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetProperty()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return MatchedPropertyValidationError{
+				field:  "Property",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for Similarity
+
+	if len(errors) > 0 {
+		return MatchedPropertyMultiError(errors)
+	}
+
+	return nil
+}
+
+// MatchedPropertyMultiError is an error wrapping multiple validation errors
+// returned by MatchedProperty.ValidateAll() if the designated constraints
+// aren't met.
+type MatchedPropertyMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m MatchedPropertyMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m MatchedPropertyMultiError) AllErrors() []error { return m }
+
+// MatchedPropertyValidationError is the validation error returned by
+// MatchedProperty.Validate if the designated constraints aren't met.
+type MatchedPropertyValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e MatchedPropertyValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e MatchedPropertyValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e MatchedPropertyValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e MatchedPropertyValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e MatchedPropertyValidationError) ErrorName() string { return "MatchedPropertyValidationError" }
+
+// Error satisfies the builtin error interface
+func (e MatchedPropertyValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sMatchedProperty.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = MatchedPropertyValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = MatchedPropertyValidationError{}
+
+// Validate checks the field values on MatchPropertiesResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *MatchPropertiesResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on MatchPropertiesResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// MatchPropertiesResponseMultiError, or nil if none found.
+func (m *MatchPropertiesResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *MatchPropertiesResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetMatches() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, MatchPropertiesResponseValidationError{
+						field:  fmt.Sprintf("Matches[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, MatchPropertiesResponseValidationError{
+						field:  fmt.Sprintf("Matches[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return MatchPropertiesResponseValidationError{
+					field:  fmt.Sprintf("Matches[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return MatchPropertiesResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// MatchPropertiesResponseMultiError is an error wrapping multiple validation
+// errors returned by MatchPropertiesResponse.ValidateAll() if the designated
+// constraints aren't met.
+type MatchPropertiesResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m MatchPropertiesResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m MatchPropertiesResponseMultiError) AllErrors() []error { return m }
+
+// MatchPropertiesResponseValidationError is the validation error returned by
+// MatchPropertiesResponse.Validate if the designated constraints aren't met.
+type MatchPropertiesResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e MatchPropertiesResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e MatchPropertiesResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e MatchPropertiesResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e MatchPropertiesResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e MatchPropertiesResponseValidationError) ErrorName() string {
+	return "MatchPropertiesResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e MatchPropertiesResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sMatchPropertiesResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = MatchPropertiesResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = MatchPropertiesResponseValidationError{}
+
 // Validate checks the field values on ListPropertiesRequest_Filter with the
 // rules defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
@@ -1174,3 +1596,130 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = ListPropertiesRequest_FilterValidationError{}
+
+// Validate checks the field values on MatchPropertiesRequest_Filter with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *MatchPropertiesRequest_Filter) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on MatchPropertiesRequest_Filter with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// MatchPropertiesRequest_FilterMultiError, or nil if none found.
+func (m *MatchPropertiesRequest_Filter) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *MatchPropertiesRequest_Filter) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.Status != nil {
+		// no validation rules for Status
+	}
+
+	if m.PropertyType != nil {
+		// no validation rules for PropertyType
+	}
+
+	if m.MinRooms != nil {
+		// no validation rules for MinRooms
+	}
+
+	if m.MaxRooms != nil {
+		// no validation rules for MaxRooms
+	}
+
+	if m.MinPrice != nil {
+		// no validation rules for MinPrice
+	}
+
+	if m.MaxPrice != nil {
+		// no validation rules for MaxPrice
+	}
+
+	if len(errors) > 0 {
+		return MatchPropertiesRequest_FilterMultiError(errors)
+	}
+
+	return nil
+}
+
+// MatchPropertiesRequest_FilterMultiError is an error wrapping multiple
+// validation errors returned by MatchPropertiesRequest_Filter.ValidateAll()
+// if the designated constraints aren't met.
+type MatchPropertiesRequest_FilterMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m MatchPropertiesRequest_FilterMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m MatchPropertiesRequest_FilterMultiError) AllErrors() []error { return m }
+
+// MatchPropertiesRequest_FilterValidationError is the validation error
+// returned by MatchPropertiesRequest_Filter.Validate if the designated
+// constraints aren't met.
+type MatchPropertiesRequest_FilterValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e MatchPropertiesRequest_FilterValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e MatchPropertiesRequest_FilterValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e MatchPropertiesRequest_FilterValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e MatchPropertiesRequest_FilterValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e MatchPropertiesRequest_FilterValidationError) ErrorName() string {
+	return "MatchPropertiesRequest_FilterValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e MatchPropertiesRequest_FilterValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sMatchPropertiesRequest_Filter.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = MatchPropertiesRequest_FilterValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = MatchPropertiesRequest_FilterValidationError{}

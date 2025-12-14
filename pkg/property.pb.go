@@ -676,6 +676,167 @@ func (x *PropertyResponse) GetProperty() *Property {
 	return nil
 }
 
+// MatchPropertiesRequest — запрос на поиск подходящих объектов для лида.
+type MatchPropertiesRequest struct {
+	state  protoimpl.MessageState         `protogen:"open.v1"`
+	LeadId string                         `protobuf:"bytes,1,opt,name=lead_id,json=leadId,proto3" json:"lead_id,omitempty"`
+	Filter *MatchPropertiesRequest_Filter `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
+	// Лимит результатов (по умолчанию 10)
+	Limit         *int32 `protobuf:"varint,3,opt,name=limit,proto3,oneof" json:"limit,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MatchPropertiesRequest) Reset() {
+	*x = MatchPropertiesRequest{}
+	mi := &file_property_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MatchPropertiesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MatchPropertiesRequest) ProtoMessage() {}
+
+func (x *MatchPropertiesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_property_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MatchPropertiesRequest.ProtoReflect.Descriptor instead.
+func (*MatchPropertiesRequest) Descriptor() ([]byte, []int) {
+	return file_property_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *MatchPropertiesRequest) GetLeadId() string {
+	if x != nil {
+		return x.LeadId
+	}
+	return ""
+}
+
+func (x *MatchPropertiesRequest) GetFilter() *MatchPropertiesRequest_Filter {
+	if x != nil {
+		return x.Filter
+	}
+	return nil
+}
+
+func (x *MatchPropertiesRequest) GetLimit() int32 {
+	if x != nil && x.Limit != nil {
+		return *x.Limit
+	}
+	return 0
+}
+
+// MatchedProperty — объект недвижимости с коэффициентом схожести.
+type MatchedProperty struct {
+	state    protoimpl.MessageState `protogen:"open.v1"`
+	Property *Property              `protobuf:"bytes,1,opt,name=property,proto3" json:"property,omitempty"`
+	// Коэффициент схожести (0-1, где 1 - полное совпадение)
+	Similarity    float64 `protobuf:"fixed64,2,opt,name=similarity,proto3" json:"similarity,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MatchedProperty) Reset() {
+	*x = MatchedProperty{}
+	mi := &file_property_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MatchedProperty) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MatchedProperty) ProtoMessage() {}
+
+func (x *MatchedProperty) ProtoReflect() protoreflect.Message {
+	mi := &file_property_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MatchedProperty.ProtoReflect.Descriptor instead.
+func (*MatchedProperty) Descriptor() ([]byte, []int) {
+	return file_property_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *MatchedProperty) GetProperty() *Property {
+	if x != nil {
+		return x.Property
+	}
+	return nil
+}
+
+func (x *MatchedProperty) GetSimilarity() float64 {
+	if x != nil {
+		return x.Similarity
+	}
+	return 0
+}
+
+// MatchPropertiesResponse — ответ с подходящими объектами.
+type MatchPropertiesResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Matches       []*MatchedProperty     `protobuf:"bytes,1,rep,name=matches,proto3" json:"matches,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MatchPropertiesResponse) Reset() {
+	*x = MatchPropertiesResponse{}
+	mi := &file_property_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MatchPropertiesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MatchPropertiesResponse) ProtoMessage() {}
+
+func (x *MatchPropertiesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_property_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MatchPropertiesResponse.ProtoReflect.Descriptor instead.
+func (*MatchPropertiesResponse) Descriptor() ([]byte, []int) {
+	return file_property_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *MatchPropertiesResponse) GetMatches() []*MatchedProperty {
+	if x != nil {
+		return x.Matches
+	}
+	return nil
+}
+
 type ListPropertiesRequest_Filter struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Status        *PropertyStatus        `protobuf:"varint,1,opt,name=status,proto3,enum=leadexchange.v1.PropertyStatus,oneof" json:"status,omitempty"`
@@ -692,7 +853,7 @@ type ListPropertiesRequest_Filter struct {
 
 func (x *ListPropertiesRequest_Filter) Reset() {
 	*x = ListPropertiesRequest_Filter{}
-	mi := &file_property_proto_msgTypes[7]
+	mi := &file_property_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -704,7 +865,7 @@ func (x *ListPropertiesRequest_Filter) String() string {
 func (*ListPropertiesRequest_Filter) ProtoMessage() {}
 
 func (x *ListPropertiesRequest_Filter) ProtoReflect() protoreflect.Message {
-	mi := &file_property_proto_msgTypes[7]
+	mi := &file_property_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -770,6 +931,90 @@ func (x *ListPropertiesRequest_Filter) GetMinPrice() int64 {
 }
 
 func (x *ListPropertiesRequest_Filter) GetMaxPrice() int64 {
+	if x != nil && x.MaxPrice != nil {
+		return *x.MaxPrice
+	}
+	return 0
+}
+
+type MatchPropertiesRequest_Filter struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Status        *PropertyStatus        `protobuf:"varint,1,opt,name=status,proto3,enum=leadexchange.v1.PropertyStatus,oneof" json:"status,omitempty"`
+	PropertyType  *PropertyType          `protobuf:"varint,2,opt,name=property_type,json=propertyType,proto3,enum=leadexchange.v1.PropertyType,oneof" json:"property_type,omitempty"`
+	MinRooms      *int32                 `protobuf:"varint,3,opt,name=min_rooms,json=minRooms,proto3,oneof" json:"min_rooms,omitempty"`
+	MaxRooms      *int32                 `protobuf:"varint,4,opt,name=max_rooms,json=maxRooms,proto3,oneof" json:"max_rooms,omitempty"`
+	MinPrice      *int64                 `protobuf:"varint,5,opt,name=min_price,json=minPrice,proto3,oneof" json:"min_price,omitempty"`
+	MaxPrice      *int64                 `protobuf:"varint,6,opt,name=max_price,json=maxPrice,proto3,oneof" json:"max_price,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MatchPropertiesRequest_Filter) Reset() {
+	*x = MatchPropertiesRequest_Filter{}
+	mi := &file_property_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MatchPropertiesRequest_Filter) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MatchPropertiesRequest_Filter) ProtoMessage() {}
+
+func (x *MatchPropertiesRequest_Filter) ProtoReflect() protoreflect.Message {
+	mi := &file_property_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MatchPropertiesRequest_Filter.ProtoReflect.Descriptor instead.
+func (*MatchPropertiesRequest_Filter) Descriptor() ([]byte, []int) {
+	return file_property_proto_rawDescGZIP(), []int{7, 0}
+}
+
+func (x *MatchPropertiesRequest_Filter) GetStatus() PropertyStatus {
+	if x != nil && x.Status != nil {
+		return *x.Status
+	}
+	return PropertyStatus_PROPERTY_STATUS_UNSPECIFIED
+}
+
+func (x *MatchPropertiesRequest_Filter) GetPropertyType() PropertyType {
+	if x != nil && x.PropertyType != nil {
+		return *x.PropertyType
+	}
+	return PropertyType_PROPERTY_TYPE_UNSPECIFIED
+}
+
+func (x *MatchPropertiesRequest_Filter) GetMinRooms() int32 {
+	if x != nil && x.MinRooms != nil {
+		return *x.MinRooms
+	}
+	return 0
+}
+
+func (x *MatchPropertiesRequest_Filter) GetMaxRooms() int32 {
+	if x != nil && x.MaxRooms != nil {
+		return *x.MaxRooms
+	}
+	return 0
+}
+
+func (x *MatchPropertiesRequest_Filter) GetMinPrice() int64 {
+	if x != nil && x.MinPrice != nil {
+		return *x.MinPrice
+	}
+	return 0
+}
+
+func (x *MatchPropertiesRequest_Filter) GetMaxPrice() int64 {
 	if x != nil && x.MaxPrice != nil {
 		return *x.MaxPrice
 	}
@@ -867,7 +1112,36 @@ const file_property_proto_rawDesc = "" +
 	"\a_statusB\x10\n" +
 	"\x0e_owner_user_id\"I\n" +
 	"\x10PropertyResponse\x125\n" +
-	"\bproperty\x18\x01 \x01(\v2\x19.leadexchange.v1.PropertyR\bproperty*\x99\x01\n" +
+	"\bproperty\x18\x01 \x01(\v2\x19.leadexchange.v1.PropertyR\bproperty\"\x97\x04\n" +
+	"\x16MatchPropertiesRequest\x12!\n" +
+	"\alead_id\x18\x01 \x01(\tB\b\xfaB\x05r\x03\xb0\x01\x01R\x06leadId\x12F\n" +
+	"\x06filter\x18\x02 \x01(\v2..leadexchange.v1.MatchPropertiesRequest.FilterR\x06filter\x12\x19\n" +
+	"\x05limit\x18\x03 \x01(\x05H\x00R\x05limit\x88\x01\x01\x1a\xec\x02\n" +
+	"\x06Filter\x12<\n" +
+	"\x06status\x18\x01 \x01(\x0e2\x1f.leadexchange.v1.PropertyStatusH\x00R\x06status\x88\x01\x01\x12G\n" +
+	"\rproperty_type\x18\x02 \x01(\x0e2\x1d.leadexchange.v1.PropertyTypeH\x01R\fpropertyType\x88\x01\x01\x12 \n" +
+	"\tmin_rooms\x18\x03 \x01(\x05H\x02R\bminRooms\x88\x01\x01\x12 \n" +
+	"\tmax_rooms\x18\x04 \x01(\x05H\x03R\bmaxRooms\x88\x01\x01\x12 \n" +
+	"\tmin_price\x18\x05 \x01(\x03H\x04R\bminPrice\x88\x01\x01\x12 \n" +
+	"\tmax_price\x18\x06 \x01(\x03H\x05R\bmaxPrice\x88\x01\x01B\t\n" +
+	"\a_statusB\x10\n" +
+	"\x0e_property_typeB\f\n" +
+	"\n" +
+	"_min_roomsB\f\n" +
+	"\n" +
+	"_max_roomsB\f\n" +
+	"\n" +
+	"_min_priceB\f\n" +
+	"\n" +
+	"_max_priceB\b\n" +
+	"\x06_limit\"h\n" +
+	"\x0fMatchedProperty\x125\n" +
+	"\bproperty\x18\x01 \x01(\v2\x19.leadexchange.v1.PropertyR\bproperty\x12\x1e\n" +
+	"\n" +
+	"similarity\x18\x02 \x01(\x01R\n" +
+	"similarity\"U\n" +
+	"\x17MatchPropertiesResponse\x12:\n" +
+	"\amatches\x18\x01 \x03(\v2 .leadexchange.v1.MatchedPropertyR\amatches*\x99\x01\n" +
 	"\fPropertyType\x12\x1d\n" +
 	"\x19PROPERTY_TYPE_UNSPECIFIED\x10\x00\x12\x1b\n" +
 	"\x17PROPERTY_TYPE_APARTMENT\x10\x01\x12\x17\n" +
@@ -879,12 +1153,13 @@ const file_property_proto_rawDesc = "" +
 	"\x13PROPERTY_STATUS_NEW\x10\x01\x12\x1d\n" +
 	"\x19PROPERTY_STATUS_PUBLISHED\x10\x02\x12\x18\n" +
 	"\x14PROPERTY_STATUS_SOLD\x10\x03\x12\x1b\n" +
-	"\x17PROPERTY_STATUS_DELETED\x10\x042\x88\x04\n" +
+	"\x17PROPERTY_STATUS_DELETED\x10\x042\x90\x05\n" +
 	"\x0fPropertyService\x12v\n" +
 	"\x0eCreateProperty\x12&.leadexchange.v1.CreatePropertyRequest\x1a!.leadexchange.v1.PropertyResponse\"\x19\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/v1/properties\x12{\n" +
 	"\vGetProperty\x12#.leadexchange.v1.GetPropertyRequest\x1a!.leadexchange.v1.PropertyResponse\"$\x82\xd3\xe4\x93\x02\x1e\x12\x1c/v1/properties/{property_id}\x12y\n" +
 	"\x0eListProperties\x12&.leadexchange.v1.ListPropertiesRequest\x1a'.leadexchange.v1.ListPropertiesResponse\"\x16\x82\xd3\xe4\x93\x02\x10\x12\x0e/v1/properties\x12\x84\x01\n" +
-	"\x0eUpdateProperty\x12&.leadexchange.v1.UpdatePropertyRequest\x1a!.leadexchange.v1.PropertyResponse\"'\x82\xd3\xe4\x93\x02!:\x01*2\x1c/v1/properties/{property_id}B4Z2leadexchange/gen/go/leadexchange/v1;leadexchangev1b\x06proto3"
+	"\x0eUpdateProperty\x12&.leadexchange.v1.UpdatePropertyRequest\x1a!.leadexchange.v1.PropertyResponse\"'\x82\xd3\xe4\x93\x02!:\x01*2\x1c/v1/properties/{property_id}\x12\x85\x01\n" +
+	"\x0fMatchProperties\x12'.leadexchange.v1.MatchPropertiesRequest\x1a(.leadexchange.v1.MatchPropertiesResponse\"\x1f\x82\xd3\xe4\x93\x02\x19:\x01*\"\x14/v1/properties/matchB4Z2leadexchange/gen/go/leadexchange/v1;leadexchangev1b\x06proto3"
 
 var (
 	file_property_proto_rawDescOnce sync.Once
@@ -899,43 +1174,54 @@ func file_property_proto_rawDescGZIP() []byte {
 }
 
 var file_property_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_property_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_property_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_property_proto_goTypes = []any{
-	(PropertyType)(0),                    // 0: leadexchange.v1.PropertyType
-	(PropertyStatus)(0),                  // 1: leadexchange.v1.PropertyStatus
-	(*Property)(nil),                     // 2: leadexchange.v1.Property
-	(*CreatePropertyRequest)(nil),        // 3: leadexchange.v1.CreatePropertyRequest
-	(*GetPropertyRequest)(nil),           // 4: leadexchange.v1.GetPropertyRequest
-	(*ListPropertiesRequest)(nil),        // 5: leadexchange.v1.ListPropertiesRequest
-	(*ListPropertiesResponse)(nil),       // 6: leadexchange.v1.ListPropertiesResponse
-	(*UpdatePropertyRequest)(nil),        // 7: leadexchange.v1.UpdatePropertyRequest
-	(*PropertyResponse)(nil),             // 8: leadexchange.v1.PropertyResponse
-	(*ListPropertiesRequest_Filter)(nil), // 9: leadexchange.v1.ListPropertiesRequest.Filter
+	(PropertyType)(0),                     // 0: leadexchange.v1.PropertyType
+	(PropertyStatus)(0),                   // 1: leadexchange.v1.PropertyStatus
+	(*Property)(nil),                      // 2: leadexchange.v1.Property
+	(*CreatePropertyRequest)(nil),         // 3: leadexchange.v1.CreatePropertyRequest
+	(*GetPropertyRequest)(nil),            // 4: leadexchange.v1.GetPropertyRequest
+	(*ListPropertiesRequest)(nil),         // 5: leadexchange.v1.ListPropertiesRequest
+	(*ListPropertiesResponse)(nil),        // 6: leadexchange.v1.ListPropertiesResponse
+	(*UpdatePropertyRequest)(nil),         // 7: leadexchange.v1.UpdatePropertyRequest
+	(*PropertyResponse)(nil),              // 8: leadexchange.v1.PropertyResponse
+	(*MatchPropertiesRequest)(nil),        // 9: leadexchange.v1.MatchPropertiesRequest
+	(*MatchedProperty)(nil),               // 10: leadexchange.v1.MatchedProperty
+	(*MatchPropertiesResponse)(nil),       // 11: leadexchange.v1.MatchPropertiesResponse
+	(*ListPropertiesRequest_Filter)(nil),  // 12: leadexchange.v1.ListPropertiesRequest.Filter
+	(*MatchPropertiesRequest_Filter)(nil), // 13: leadexchange.v1.MatchPropertiesRequest.Filter
 }
 var file_property_proto_depIdxs = []int32{
 	0,  // 0: leadexchange.v1.Property.property_type:type_name -> leadexchange.v1.PropertyType
 	1,  // 1: leadexchange.v1.Property.status:type_name -> leadexchange.v1.PropertyStatus
 	0,  // 2: leadexchange.v1.CreatePropertyRequest.property_type:type_name -> leadexchange.v1.PropertyType
-	9,  // 3: leadexchange.v1.ListPropertiesRequest.filter:type_name -> leadexchange.v1.ListPropertiesRequest.Filter
+	12, // 3: leadexchange.v1.ListPropertiesRequest.filter:type_name -> leadexchange.v1.ListPropertiesRequest.Filter
 	2,  // 4: leadexchange.v1.ListPropertiesResponse.properties:type_name -> leadexchange.v1.Property
 	0,  // 5: leadexchange.v1.UpdatePropertyRequest.property_type:type_name -> leadexchange.v1.PropertyType
 	1,  // 6: leadexchange.v1.UpdatePropertyRequest.status:type_name -> leadexchange.v1.PropertyStatus
 	2,  // 7: leadexchange.v1.PropertyResponse.property:type_name -> leadexchange.v1.Property
-	1,  // 8: leadexchange.v1.ListPropertiesRequest.Filter.status:type_name -> leadexchange.v1.PropertyStatus
-	0,  // 9: leadexchange.v1.ListPropertiesRequest.Filter.property_type:type_name -> leadexchange.v1.PropertyType
-	3,  // 10: leadexchange.v1.PropertyService.CreateProperty:input_type -> leadexchange.v1.CreatePropertyRequest
-	4,  // 11: leadexchange.v1.PropertyService.GetProperty:input_type -> leadexchange.v1.GetPropertyRequest
-	5,  // 12: leadexchange.v1.PropertyService.ListProperties:input_type -> leadexchange.v1.ListPropertiesRequest
-	7,  // 13: leadexchange.v1.PropertyService.UpdateProperty:input_type -> leadexchange.v1.UpdatePropertyRequest
-	8,  // 14: leadexchange.v1.PropertyService.CreateProperty:output_type -> leadexchange.v1.PropertyResponse
-	8,  // 15: leadexchange.v1.PropertyService.GetProperty:output_type -> leadexchange.v1.PropertyResponse
-	6,  // 16: leadexchange.v1.PropertyService.ListProperties:output_type -> leadexchange.v1.ListPropertiesResponse
-	8,  // 17: leadexchange.v1.PropertyService.UpdateProperty:output_type -> leadexchange.v1.PropertyResponse
-	14, // [14:18] is the sub-list for method output_type
-	10, // [10:14] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	13, // 8: leadexchange.v1.MatchPropertiesRequest.filter:type_name -> leadexchange.v1.MatchPropertiesRequest.Filter
+	2,  // 9: leadexchange.v1.MatchedProperty.property:type_name -> leadexchange.v1.Property
+	10, // 10: leadexchange.v1.MatchPropertiesResponse.matches:type_name -> leadexchange.v1.MatchedProperty
+	1,  // 11: leadexchange.v1.ListPropertiesRequest.Filter.status:type_name -> leadexchange.v1.PropertyStatus
+	0,  // 12: leadexchange.v1.ListPropertiesRequest.Filter.property_type:type_name -> leadexchange.v1.PropertyType
+	1,  // 13: leadexchange.v1.MatchPropertiesRequest.Filter.status:type_name -> leadexchange.v1.PropertyStatus
+	0,  // 14: leadexchange.v1.MatchPropertiesRequest.Filter.property_type:type_name -> leadexchange.v1.PropertyType
+	3,  // 15: leadexchange.v1.PropertyService.CreateProperty:input_type -> leadexchange.v1.CreatePropertyRequest
+	4,  // 16: leadexchange.v1.PropertyService.GetProperty:input_type -> leadexchange.v1.GetPropertyRequest
+	5,  // 17: leadexchange.v1.PropertyService.ListProperties:input_type -> leadexchange.v1.ListPropertiesRequest
+	7,  // 18: leadexchange.v1.PropertyService.UpdateProperty:input_type -> leadexchange.v1.UpdatePropertyRequest
+	9,  // 19: leadexchange.v1.PropertyService.MatchProperties:input_type -> leadexchange.v1.MatchPropertiesRequest
+	8,  // 20: leadexchange.v1.PropertyService.CreateProperty:output_type -> leadexchange.v1.PropertyResponse
+	8,  // 21: leadexchange.v1.PropertyService.GetProperty:output_type -> leadexchange.v1.PropertyResponse
+	6,  // 22: leadexchange.v1.PropertyService.ListProperties:output_type -> leadexchange.v1.ListPropertiesResponse
+	8,  // 23: leadexchange.v1.PropertyService.UpdateProperty:output_type -> leadexchange.v1.PropertyResponse
+	11, // 24: leadexchange.v1.PropertyService.MatchProperties:output_type -> leadexchange.v1.MatchPropertiesResponse
+	20, // [20:25] is the sub-list for method output_type
+	15, // [15:20] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_property_proto_init() }
@@ -947,13 +1233,15 @@ func file_property_proto_init() {
 	file_property_proto_msgTypes[1].OneofWrappers = []any{}
 	file_property_proto_msgTypes[5].OneofWrappers = []any{}
 	file_property_proto_msgTypes[7].OneofWrappers = []any{}
+	file_property_proto_msgTypes[10].OneofWrappers = []any{}
+	file_property_proto_msgTypes[11].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_property_proto_rawDesc), len(file_property_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   8,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

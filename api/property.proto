@@ -37,6 +37,14 @@ service PropertyService {
       body: "*"
     };
   }
+
+  // Найти подходящие объекты недвижимости для лида по векторному сходству.
+  rpc MatchProperties (MatchPropertiesRequest) returns (MatchPropertiesResponse) {
+    option (google.api.http) = {
+      post: "/v1/properties/match"
+      body: "*"
+    };
+  }
 }
 
 // Property — сущность объекта недвижимости.
@@ -139,5 +147,33 @@ message UpdatePropertyRequest {
 
 message PropertyResponse {
   Property property = 1;
+}
+
+// MatchPropertiesRequest — запрос на поиск подходящих объектов для лида.
+message MatchPropertiesRequest {
+  string lead_id = 1 [(validate.rules).string.uuid = true];
+  message Filter {
+    optional PropertyStatus status = 1;
+    optional PropertyType property_type = 2;
+    optional int32 min_rooms = 3;
+    optional int32 max_rooms = 4;
+    optional int64 min_price = 5;
+    optional int64 max_price = 6;
+  }
+  Filter filter = 2;
+  // Лимит результатов (по умолчанию 10)
+  optional int32 limit = 3;
+}
+
+// MatchedProperty — объект недвижимости с коэффициентом схожести.
+message MatchedProperty {
+  Property property = 1;
+  // Коэффициент схожести (0-1, где 1 - полное совпадение)
+  double similarity = 2;
+}
+
+// MatchPropertiesResponse — ответ с подходящими объектами.
+message MatchPropertiesResponse {
+  repeated MatchedProperty matches = 1;
 }
 

@@ -15,6 +15,7 @@ type PropertyService interface {
 	GetProperty(ctx context.Context, id uuid.UUID) (domain.Property, error)
 	UpdateProperty(ctx context.Context, id uuid.UUID, update domain.PropertyFilter) (domain.Property, error)
 	ListProperties(ctx context.Context, filter domain.PropertyFilter) ([]domain.Property, error)
+	MatchProperties(ctx context.Context, leadID uuid.UUID, filter domain.PropertyFilter, limit int) ([]domain.MatchedProperty, error)
 }
 
 // propertyServer реализует gRPC PropertyServiceServer.

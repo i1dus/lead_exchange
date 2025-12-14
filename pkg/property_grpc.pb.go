@@ -19,10 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	PropertyService_CreateProperty_FullMethodName = "/leadexchange.v1.PropertyService/CreateProperty"
-	PropertyService_GetProperty_FullMethodName    = "/leadexchange.v1.PropertyService/GetProperty"
-	PropertyService_ListProperties_FullMethodName = "/leadexchange.v1.PropertyService/ListProperties"
-	PropertyService_UpdateProperty_FullMethodName = "/leadexchange.v1.PropertyService/UpdateProperty"
+	PropertyService_CreateProperty_FullMethodName  = "/leadexchange.v1.PropertyService/CreateProperty"
+	PropertyService_GetProperty_FullMethodName     = "/leadexchange.v1.PropertyService/GetProperty"
+	PropertyService_ListProperties_FullMethodName  = "/leadexchange.v1.PropertyService/ListProperties"
+	PropertyService_UpdateProperty_FullMethodName  = "/leadexchange.v1.PropertyService/UpdateProperty"
+	PropertyService_MatchProperties_FullMethodName = "/leadexchange.v1.PropertyService/MatchProperties"
 )
 
 // PropertyServiceClient is the client API for PropertyService service.
@@ -37,6 +38,8 @@ type PropertyServiceClient interface {
 	ListProperties(ctx context.Context, in *ListPropertiesRequest, opts ...grpc.CallOption) (*ListPropertiesResponse, error)
 	// Обновить объект недвижимости.
 	UpdateProperty(ctx context.Context, in *UpdatePropertyRequest, opts ...grpc.CallOption) (*PropertyResponse, error)
+	// Найти подходящие объекты недвижимости для лида по векторному сходству.
+	MatchProperties(ctx context.Context, in *MatchPropertiesRequest, opts ...grpc.CallOption) (*MatchPropertiesResponse, error)
 }
 
 type propertyServiceClient struct {
@@ -87,6 +90,16 @@ func (c *propertyServiceClient) UpdateProperty(ctx context.Context, in *UpdatePr
 	return out, nil
 }
 
+func (c *propertyServiceClient) MatchProperties(ctx context.Context, in *MatchPropertiesRequest, opts ...grpc.CallOption) (*MatchPropertiesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MatchPropertiesResponse)
+	err := c.cc.Invoke(ctx, PropertyService_MatchProperties_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PropertyServiceServer is the server API for PropertyService service.
 // All implementations must embed UnimplementedPropertyServiceServer
 // for forward compatibility.
@@ -99,6 +112,8 @@ type PropertyServiceServer interface {
 	ListProperties(context.Context, *ListPropertiesRequest) (*ListPropertiesResponse, error)
 	// Обновить объект недвижимости.
 	UpdateProperty(context.Context, *UpdatePropertyRequest) (*PropertyResponse, error)
+	// Найти подходящие объекты недвижимости для лида по векторному сходству.
+	MatchProperties(context.Context, *MatchPropertiesRequest) (*MatchPropertiesResponse, error)
 	mustEmbedUnimplementedPropertyServiceServer()
 }
 
@@ -120,6 +135,9 @@ func (UnimplementedPropertyServiceServer) ListProperties(context.Context, *ListP
 }
 func (UnimplementedPropertyServiceServer) UpdateProperty(context.Context, *UpdatePropertyRequest) (*PropertyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateProperty not implemented")
+}
+func (UnimplementedPropertyServiceServer) MatchProperties(context.Context, *MatchPropertiesRequest) (*MatchPropertiesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MatchProperties not implemented")
 }
 func (UnimplementedPropertyServiceServer) mustEmbedUnimplementedPropertyServiceServer() {}
 func (UnimplementedPropertyServiceServer) testEmbeddedByValue()                         {}
@@ -214,6 +232,24 @@ func _PropertyService_UpdateProperty_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PropertyService_MatchProperties_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MatchPropertiesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PropertyServiceServer).MatchProperties(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PropertyService_MatchProperties_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PropertyServiceServer).MatchProperties(ctx, req.(*MatchPropertiesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PropertyService_ServiceDesc is the grpc.ServiceDesc for PropertyService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -236,6 +272,10 @@ var PropertyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateProperty",
 			Handler:    _PropertyService_UpdateProperty_Handler,
+		},
+		{
+			MethodName: "MatchProperties",
+			Handler:    _PropertyService_MatchProperties_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
