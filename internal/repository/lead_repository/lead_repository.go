@@ -66,12 +66,13 @@ func (r *LeadRepository) GetByID(ctx context.Context, id uuid.UUID) (domain.Lead
 			lead_id, title, description, requirement,
 			contact_name, contact_phone, contact_email,
 			status, owner_user_id, created_user_id,
-			created_at, updated_at
+			embedding::text, created_at, updated_at
 		FROM leads
 		WHERE lead_id = $1
 	`
 
 	var l domain.Lead
+	var embeddingStr *string
 	err := r.db.QueryRow(ctx, query, id).Scan(
 		&l.ID,
 		&l.Title,
@@ -83,6 +84,7 @@ func (r *LeadRepository) GetByID(ctx context.Context, id uuid.UUID) (domain.Lead
 		&l.Status,
 		&l.OwnerUserID,
 		&l.CreatedUserID,
+		&embeddingStr,
 		&l.CreatedAt,
 		&l.UpdatedAt,
 	)
@@ -91,6 +93,16 @@ func (r *LeadRepository) GetByID(ctx context.Context, id uuid.UUID) (domain.Lead
 			return domain.Lead{}, fmt.Errorf("%s: %w", op, repository.ErrLeadNotFound)
 		}
 		return domain.Lead{}, fmt.Errorf("%s: %w", op, err)
+	}
+
+	// Конвертируем embedding из строки
+	if embeddingStr != nil && *embeddingStr != "" {
+		vec, err := repository.StringToVector(*embeddingStr)
+		if err != nil {
+			r.log.Warn("failed to parse embedding", "error", err)
+		} else {
+			l.Embedding = vec
+		}
 	}
 
 	return l, nil
@@ -216,6 +228,29 @@ func (r *LeadRepository) ListLeads(ctx context.Context, filter domain.LeadFilter
 	}
 
 	return leads, rows.Err()
+}
+
+// UpdateEmbedding обновляет embedding для лида.
+func (r *LeadRepository) UpdateEmbedding(ctx context.Context, leadID uuid.UUID, embedding []float32) error {
+	const op = "LeadRepository.UpdateEmbedding"
+
+	query := `
+		UPDATE leads 
+		SET embedding = $1::vector, updated_at = NOW()
+		WHERE lead_id = $2
+	`
+
+	embeddingStr := repository.VectorToString(embedding)
+	tag, err := r.db.Exec(ctx, query, embeddingStr, leadID)
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	if tag.RowsAffected() == 0 {
+		return fmt.Errorf("%s: %w", op, repository.ErrLeadNotFound)
+	}
+
+	return nil
 }
 
 func isUniqueViolation(err error) bool {

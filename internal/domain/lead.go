@@ -19,6 +19,8 @@ type Lead struct {
 	Status        LeadStatus
 	OwnerUserID   uuid.UUID
 	CreatedUserID uuid.UUID
+	// Embedding — векторное представление для матчинга (pgvector)
+	Embedding     []float32
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 }
